@@ -34,6 +34,13 @@ jobs:
       - name: Run JUnit Tests with Gradle
         run: ./gradlew test
 
+      - name: Generate Test Summary
+        if: always()
+        run: |
+          PASSED=$(grep -oP '(?<=tests=")[0-9]+(?=" failures="0")' build/test-results/test/*.xml | awk '{s+=$1} END {print s+0}')
+          TOTAL=$(grep -oP '(?<=tests=")[0-9]+' build/test-results/test/*.xml | awk '{s+=$1} END {print s+0}')
+          echo "Tests Passed: [$PASSED/$TOTAL]"
+
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         if: always()
